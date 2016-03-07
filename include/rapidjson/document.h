@@ -1649,7 +1649,6 @@ public:
     /*! \note If the value is 64-bit integer type, it may lose precision. Use \c IsLosslessFloat() to check whether the converison is lossless.
     */
     float GetFloat() const {
-        RAPIDJSON_ASSERT(IsFloat());
         return static_cast<float>(GetDouble());
     }
 
@@ -2324,6 +2323,14 @@ public:
     bool Int64(int64_t i) { new (stack_.template Push<ValueType>()) ValueType(i); return true; }
     bool Uint64(uint64_t i) { new (stack_.template Push<ValueType>()) ValueType(i); return true; }
     bool Double(double d) { new (stack_.template Push<ValueType>()) ValueType(d); return true; }
+
+    bool RawNumber(const Ch* str, SizeType length, bool copy) { 
+        if (copy) 
+            new (stack_.template Push<ValueType>()) ValueType(str, length, GetAllocator());
+        else
+            new (stack_.template Push<ValueType>()) ValueType(str, length);
+        return true;
+    }
 
     bool String(const Ch* str, SizeType length, bool copy) { 
         if (copy) 
